@@ -1,4 +1,5 @@
 const dotenv = require('dotenv');
+const http = require('http');
 const { Telegraf, Markup } = require('telegraf');
 
 dotenv.config();
@@ -69,6 +70,16 @@ bot.action(['answer_no', 'answer_maybe'], async (ctx) => {
 bot.launch().then(() => {
   console.log('Valentine bot is running.');
 });
+
+const healthPort = Number(process.env.PORT || 8000);
+http
+  .createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OK');
+  })
+  .listen(healthPort, '0.0.0.0', () => {
+    console.log(`Health check server listening on ${healthPort}`);
+  });
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
